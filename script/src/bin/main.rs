@@ -145,7 +145,16 @@ async fn main() {
         // Setup the program for proving.
         let (pk, vk) = client.setup(image);
 
-        // Generate the proof
+        // Generate the proof one time to initialize the groth16 circuit.
+        let start = std::time::Instant::now();
+        let _ = client
+            .prove(&pk, &stdin)
+            .groth16()
+            .run()
+            .expect("failed to generate proof");
+        let _ = start.elapsed().as_secs_f64();
+
+        // Generate the proof.
         let start = std::time::Instant::now();
         let proof = client
             .prove(&pk, &stdin)
